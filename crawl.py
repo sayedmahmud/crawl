@@ -3,6 +3,10 @@ import argparse
 import sys
 import requests
 from bs4 import BeautifulSoup
+import urllib3
+
+# Disable SSL certificate verification (not recommended for production use)
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # setting up the command line argument parser
 parser = argparse.ArgumentParser(description='Crawl a website and print all links')
@@ -22,7 +26,7 @@ if not url.startswith("http"):
 
 try:
     # sending a GET request to the website
-    response = requests.get(url)
+    response = requests.get(url, verify=False)  # Disabling SSL verification
     soup = BeautifulSoup(response.content, 'html.parser')
 
     # finding all links on the website
@@ -40,6 +44,7 @@ try:
             print("source:", src)
         else:
             print(src)
+
     # finding all src on the website
     svgs = [src.get('src') for src in soup.find_all('svg')]
     for src in svgs:
